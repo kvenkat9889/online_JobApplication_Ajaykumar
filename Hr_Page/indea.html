@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HR Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap5.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+        }
+        .dashboard-header {
+            background-color: #2c3e50;
+            color: white;
+            padding: 20px 0;
+            margin-bottom: 30px;
+        }
+        .applicant-card {
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+        .applicant-card-header {
+            background-color: #3498db;
+            color: white;
+            padding: 15px;
+        }
+        .document-link {
+            color: #3498db;
+            text-decoration: none;
+        }
+        .document-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-header">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-8">
+                    <h2>Job Applications Dashboard</h2>
+                    <p class="mb-0">View and manage all job applications</p>
+                </div>
+                <div class="col-md-4 text-end">
+                    <button class="btn btn-light" id="exportExcel">Export to Excel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <table id="applicantsTable" class="table table-striped" style="width:100%">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Mobile</th>
+                                    <th>Job Role</th>
+                                    <th>Experience</th>
+                                    <th>Applied On</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Data will be loaded via JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Applicant Details Modal -->
+        <div class="modal fade" id="applicantModal" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Applicant Details</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body" id="applicantDetails">
+                        <!-- Content will be loaded via JavaScript -->
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            // Initialize DataTable
+            const table = $('#applicantsTable').DataTable({
+                ajax: {
+                    url: '/hr-dashboard',
+                    dataSrc: ''
+                },
+                columns: [
+                    { data: 'id' },
+                    { data: 'full_name' },
+                    { data: 'email' },
+                    { data: 'mobile' },
+                    { data: 'job_role' },
+                    { 
+                        data: 'experience_status',
+                        render: function(data, type, row) {
+                            return data === 'Experienced' ? 
+                                `${data} (${row.experience_count})` : data;
+                        }
+                    },
+                    { 
+                        data: 'created_at',
+                        render: function(data) {
+                            return new Date(data).toLocaleDateString();
+                        }
+                    },
+                    {
+                        data: 'id',
+                        render: function(data) {
+                            return `<button class="btn btn-sm btn-primary view-btn" data-id="${data}">View</button>`;
+                        }
+                    }
+                ]
+            });
+
+            // View applicant details
+            $(document).on('click', '.view-btn', function() {
+                const applicantId = $(this).data('id');
+                
+                $.get(`/applicant/${applicantId}`, function(data) {
+                    const applicant = data.applicant;
+                    let html = `
+                        <div class="row">
+                            <div class="col-md-4 text-center mb-3">
+                                ${applicant.photo_path ? 
+                                    `<img src="/download/${applicant.photo_path.split('/').pop()}" 
+                                         class="img-thumbnail" style="max-height: 200px;">` : 
+                                    '<div class="text-muted">No photo</div>'}
+                            </div>
+                            <div class="col-md-8">
+                                <h4>${applicant.full_name}</h4>
+                                <p><strong>Email:</strong> ${applicant.email}<br>
+                                <strong>Mobile:</strong> ${applicant.mobile}<br>
+                                <strong>Alternate Mobile:</strong> ${applicant.alternate_mobile || 'N/A'}</p>
+                                <p><strong>Applied for:</strong> ${applicant.job_role}<br>
+                                <strong>Experience:</strong> ${applicant.experience_status}<br>
+                                <strong>Notice Period:</strong> ${applicant.notice_period || 'N/A'}</p>
+                            </div>
+                        </div>
+                        
+                        <div class="applicant-card mt-4">
+                            <div class="applicant-card-header">
+                                <h5 class="mb-0">Personal Information</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <p><strong>Date of Birth:</strong> ${new Date(applicant.dob).toLocaleDateString()}<br>
+                                        <strong>Gender:</strong> ${applicant.gender}<br>
+                                        <strong>Marital Status:</strong> ${applicant.marital_status || 'N/A'}<br>
+                                        <strong>Nationality:</strong> ${applicant.nationality}</p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <p><strong>Aadhaar:</strong> ${applicant.aadhaar || 'N/A'}<br>
+                                        <strong>PAN:</strong> ${applicant.pan || 'N/A'}</p>
+                                    </div>
+                                </div>
+                                <div class="row mt-2">
+                                    <div class="col-md-6">
+                                        <h6>Current Address</h6>
+                                        <p>${applicant.current_address.replace(/\n/g, '<br>')}</p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <h6>Permanent Address</h6>
+                                        <p>${applicant.permanent_address.replace(/\n/g, '<br>')}</p>
+                                    </div>
+                                </div>
+                                <div class="row mt-2">
+                                    <div class="col-md-4">
+                                        <strong>City:</strong> ${applicant.city}
+                                    </div>
+                                    <div class="col-md-4">
+                                        <strong>State:</strong> ${applicant.state}
+                                    </div>
+                                    <div class="col-md-4">
+                                        <strong>Zipcode:</strong> ${applicant.zipcode}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    
+                    // Education
+                    if (data.education.length > 0) {
+                        html += `
+                            <div class="applicant-card mt-4">
+                                <div class="applicant-card-header">
+                                    <h5 class="mb-0">Education</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered">
+                                            <thead>
+                                                <tr>
+                                                    <th>Qualification</th>
+                                                    <th>Branch</th>
+                                                    <th>Institute</th>
+                                                    <th>Board/University</th>
+                                                    <th>Year</th>
+                                                    <th>Percentage/CGPA</th>
+                                                    <th>Certificate</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                        `;
+                        
+                        data.education.forEach(edu => {
+                            html += `
+                                <tr>
+                                    <td>${edu.qualification_level}</td>
+                                    <td>${edu.branch || 'N/A'}</td>
+                                    <td>${edu.institute}</td>
+                                    <td>${edu.board}</td>
+                                    <td>${edu.year_of_passing}</td>
+                                    <td>${edu.percentage || 'N/A'}</td>
+                                    <td>
+                                        ${edu.certificate_path ? 
+                                            `<a href="/download/${edu.certificate_path.split('/').pop()}" 
+                                               class="document-link" target="_blank">View</a>` : 
+                                            'N/A'}
+                                    </td>
+                                </tr>
+                            `;
+                        });
+                        
+                        html += `
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    }
+                    
+                    // Experience
+                    if (data.experience.length > 0) {
+                        html += `
+                            <div class="applicant-card mt-4">
+                                <div class="applicant-card-header">
+                                    <h5 class="mb-0">Work Experience</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered">
+                                            <thead>
+                                                <tr>
+                                                    <th>Company</th>
+                                                    <th>Designation</th>
+                                                    <th>Experience</th>
+                                                    <th>Location</th>
+                                                    <th>Last Salary</th>
+                                                    <th>Certificate</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                        `;
+                        
+                        data.experience.forEach(exp => {
+                            html += `
+                                <tr>
+                                    <td>${exp.company_name}</td>
+                                    <td>${exp.designation}</td>
+                                    <td>${exp.years_of_experience} years</td>
+                                    <td>${exp.work_location || 'N/A'}</td>
+                                    <td>${exp.last_salary ? '₹' + exp.last_salary : 'N/A'}</td>
+                                    <td>
+                                        ${exp.certificate_path ? 
+                                            `<a href="/download/${exp.certificate_path.split('/').pop()}" 
+                                               class="document-link" target="_blank">View</a>` : 
+                                            'N/A'}
+                                    </td>
+                                </tr>
+                            `;
+                        });
+                        
+                        html += `
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    }
+                    
+                    // Key Skills & Certifications
+                    html += `
+                        <div class="row mt-4">
+                            <div class="col-md-6">
+                                <div class="card h-100">
+                                    <div class="card-header bg-light">
+                                        <h5 class="mb-0">Key Skills</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <p>${applicant.key_skills.replace(/,/g, ', ')}</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="card h-100">
+                                    <div class="card-header bg-light">
+                                        <h5 class="mb-0">Certifications</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <p>${applicant.certifications || 'N/A'}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    
+                    // References
+                    if (data.references.length > 0) {
+                        html += `
+                            <div class="applicant-card mt-4">
+                                <div class="applicant-card-header">
+                                    <h5 class="mb-0">References</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                        `;
+                        
+                        data.references.forEach(ref => {
+                            html += `
+                                <div class="col-md-6 mb-3">
+                                    <p><strong>Name:</strong> ${ref.reference_name}<br>
+                                    <strong>Relation:</strong> ${ref.relation || 'N/A'}<br>
+                                    <strong>Contact:</strong> ${ref.contact_number || 'N/A'}<br>
+                                    <strong>Email:</strong> ${ref.email || 'N/A'}</p>
+                                </div>
+                            `;
+                        });
+                        
+                        html += `
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    }
+                    
+                    // Documents
+                    html += `
+                        <div class="applicant-card mt-4">
+                            <div class="applicant-card-header">
+                                <h5 class="mb-0">Documents</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <p><strong>Resume/CV:</strong><br>
+                                        ${applicant.resume_path ? 
+                                            `<a href="/download/${applicant.resume_path.split('/').pop()}" 
+                                               class="document-link" target="_blank">Download</a>` : 
+                                            'Not available'}
+                                    </div>
+                                    <div class="col-md-4">
+                                        <p><strong>ID Proof:</strong><br>
+                                        ${applicant.id_proof_path ? 
+                                            `<a href="/download/${applicant.id_proof_path.split('/').pop()}" 
+                                               class="document-link" target="_blank">Download</a>` : 
+                                            'Not provided'}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    
+                    $('#applicantDetails').html(html);
+                    $('#applicantModal').modal('show');
+                });
+            });
+            
+            // Export to Excel
+            $('#exportExcel').click(function() {
+                $.get('/hr-dashboard', function(data) {
+                    const ws = XLSX.utils.json_to_sheet(data);
+                    const wb = XLSX.utils.book_new();
+                    XLSX.utils.book_append_sheet(wb, ws, "Applicants");
+                    XLSX.writeFile(wb, "job_applications.xlsx");
+                });
+            });
+        });
+    </script>
+</body>
+</html>

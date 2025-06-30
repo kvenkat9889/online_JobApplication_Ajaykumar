@@ -1,0 +1,1408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Job Application Form</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background-color: #f9fafb;
+            color: #111827;
+            line-height: 1.5;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 16px;
+        }
+
+        .form-container {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
+            overflow: hidden;
+            margin: 24px 0;
+        }
+
+        .form-content {
+            padding: 24px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .form-content::-webkit-scrollbar {
+            display: none;
+        }
+
+        .form-section {
+            padding-top: 32px;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .icon-container {
+            background-color: #dbeafe;
+            padding: 8px;
+            border-radius: 9999px;
+            margin-right: 12px;
+        }
+
+        .icon {
+            width: 20px;
+            height: 20px;
+            color: #2563eb;
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #111827;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 24px;
+            margin-bottom: 16px;
+        }
+
+        @media (min-width: 768px) {
+            .form-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-label {
+            font-size: 14px;
+            font-weight: 500;
+            color: #374151;
+            margin-bottom: 8px;
+        }
+
+        .required-field::after {
+            content: "*";
+            color: #ef4444;
+            margin-left: 4px;
+        }
+
+        .form-input {
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            padding: 8px;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .form-input:focus {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+        }
+
+        .form-textarea {
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            padding: 8px;
+            font-size: 14px;
+            resize: vertical;
+            min-height: 80px;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .form-textarea:focus {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+        }
+
+        .form-select {
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            padding: 8px;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+            background-position: right 8px center;
+            background-repeat: no-repeat;
+            background-size: 1.5em 1.5em;
+            padding-right: 32px;
+        }
+
+        .form-select:focus {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+        }
+
+        .education-section {
+            background-color: #f3f4f6;
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 24px;
+            position: relative;
+        }
+
+        .education-title {
+            font-size: 18px;
+            font-weight: 500;
+            color: #111827;
+            margin-bottom: 16px;
+        }
+
+        .remove-education {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            color: #ef4444;
+            cursor: pointer;
+            background: none;
+            border: none;
+        }
+
+        .remove-education:hover {
+            color: #dc2626;
+        }
+
+        .file-upload {
+            border: 2px dashed #d1d5db;
+            border-radius: 8px;
+            padding: 24px;
+            text-align: center;
+            margin-top: 8px;
+        }
+
+        .file-upload-icon {
+            width: 48px;
+            height: 48px;
+            color: #6b7280;
+            margin: 0 auto;
+        }
+
+        .file-upload-text {
+            margin-top: 8px;
+        }
+
+        .file-upload-link {
+            color: #2563eb;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .file-upload-link:hover {
+            color: #1d4ed8;
+        }
+
+        .file-upload-info {
+            font-size: 12px;
+            color: #6b7280;
+            margin-top: 4px;
+        }
+
+        .checkbox-container {
+            display: flex;
+            align-items: flex-start;
+            margin-top: 32px;
+        }
+
+        .checkbox {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #d1d5db;
+            border-radius: 4px;
+            margin-right: 12px;
+            cursor: pointer;
+            appearance: none;
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        .checkbox:checked {
+            background-color: #2563eb;
+            border-color: #2563eb;
+        }
+
+        .checkbox:checked::after {
+            content: "";
+            position: absolute;
+            left: 6px;
+            top: 2px;
+            width: 5px;
+            height: 10px;
+            border: solid white;
+            border-width: 0 2px 2px 0;
+            transform: rotate(45deg);
+        }
+
+        .checkbox-label {
+            font-size: 14px;
+            font-weight: 500;
+            color: #374151;
+        }
+
+        .checkbox-link {
+            color: #2563eb;
+            text-decoration: underline;
+        }
+
+        .checkbox-subtext {
+            font-size: 14px;
+            color: #6b7280;
+            margin-top: 4px;
+        }
+
+        .submit-button {
+            display: flex;
+            align-items: center;
+            padding: 8px 16px;
+            background-color: #2563eb;
+            color: white;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            border: none;
+            cursor: pointer;
+            margin-top: 32px;
+            margin-left: auto;
+            transition: background-color 0.2s;
+        }
+
+        .submit-button:hover {
+            background-color: #1d4ed8;
+        }
+
+        .submit-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .submit-icon {
+            width: 20px;
+            height: 20px;
+            margin-right: 12px;
+        }
+
+        .button {
+            display: inline-flex;
+            align-items: center;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s, color 0.2s;
+        }
+
+        .button-primary {
+            background-color: #2563eb;
+            color: white;
+            font-weight: 100;
+            border: none;
+        }
+
+        .button-primary:hover {
+            background-color: #1d4ed8;
+        }
+
+        .button-secondary {
+            background-color: white;
+            color: #374151;
+            border: 1px solid #d1d5db;
+        }
+
+        .button-secondary:hover {
+            background-color: #f9fafb;
+        }
+
+        .button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Modal styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 50;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s, visibility 0.3s;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal {
+            background-color: white;
+            border-radius: 8px;
+            padding: 24px;
+            max-width: 768px;
+            width: calc(100% - 32px);
+            max-height: 90vh;
+            overflow-y: auto;
+            transform: translateY(20px);
+            transition: transform 0.3s;
+        }
+
+        .modal-overlay.active .modal {
+            transform: translateY(0);
+        }
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .modal-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #111827;
+        }
+
+        .modal-icon {
+            width: 24px;
+            height: 24px;
+            color: #2563eb;
+            margin-right: 8px;
+        }
+
+        .modal-section {
+            margin-top: 16px;
+        }
+
+        .modal-section-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #111827;
+            margin-bottom: 8px;
+        }
+
+        .modal-section-text {
+            font-size: 14px;
+            color: #6b7280;
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            margin-top: 24px;
+        }
+
+        .success-modal {
+            text-align: center;
+            max-width: 448px;
+        }
+
+        .success-icon-container {
+            background-color: #d1fae5;
+            width: 48px;
+            height: 48px;
+            border-radius: 9999px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto;
+        }
+
+        .success-icon {
+            width: 24px;
+            height: 24px;
+            color: #10b981;
+        }
+
+        .success-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #111827;
+            margin-top: 12px;
+        }
+
+        .success-message {
+            font-size: 14px;
+            color: #6b7280;
+            margin-top: 8px;
+        }
+
+        .reference-id {
+            font-family: monospace;
+            font-weight: 500;
+        }
+
+        /* Confirmation modal styles */
+        .confirmation-details {
+            margin-top: 24px;
+        }
+
+        .confirmation-section {
+            margin-bottom: 24px;
+        }
+
+        .confirmation-section-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #111827;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .confirmation-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+        }
+
+        @media (min-width: 640px) {
+            .confirmation-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .confirmation-item {
+            margin-bottom: 8px;
+        }
+
+        .confirmation-label {
+            font-size: 14px;
+            font-weight: 500;
+            color: #6b7280;
+            margin-bottom: 4px;
+        }
+
+        .confirmation-value {
+            font-size: 14px;
+            color: #111827;
+            word-break: break-word;
+        }
+
+        .confirmation-value.empty {
+            color: #9ca3af;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <!-- Form Container -->
+    <main class="container">
+        <div class="form-container">
+            <!-- Form Content -->
+            <div class="form-content">
+                <form id="applicationForm" enctype="multipart/form-data">
+                    <!-- Personal Details -->
+                    <div class="form-section">
+                        <div class="section-header">
+                            <div class="icon-container">
+                                <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                                </svg>
+                            </div>
+                            <h2 class="section-title">Personal Details</h2>
+                        </div>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label class="form-label required-field">Full Name</label>
+                                <input type="text" name="full_name" required class="form-input" maxlength="255">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label required-field">Email</label>
+                                <input type="email" name="email" required class="form-input" maxlength="255">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label required-field">Mobile</label>
+                                <input type="tel" name="mobile" required class="form-input" maxlength="20">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label required-field">Date of Birth</label>
+                                <input type="date" name="dob" required class="form-input">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label required-field">Parent's Name</label>
+                                <input type="text" name="parent_name" required class="form-input" maxlength="255">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label required-field">Gender</label>
+                                <select name="gender" required class="form-select">
+                                    <option value="">Select Gender</option>
+                                    <option value="Male">Male</option>
+                                    <option value="Female">Female</option>
+                                    <option value="Other">Other</option>
+                                    <option value="Prefer not to say">Prefer not to say</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label required-field">Nationality</label>
+                                <input type="text" name="nationality" required class="form-input" maxlength="100">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Marital Status</label>
+                                <select name="marital_status" class="form-select">
+                                    <option value="">Select Marital Status</option>
+                                    <option value="Single">Single</option>
+                                    <option value="Married">Married</option>
+                                    <option value="Divorced">Divorced</option>
+                                    <option value="Widowed">Widowed</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Address -->
+                    <div class="form-section">
+                        <div class="section-header">
+                            <div class="icon-container">
+                                <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                </svg>
+                            </div>
+                            <h2 class="section-title">Address</h2>
+                        </div>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label class="form-label required-field">Current Address</label>
+                                <textarea name="current_address" rows="3" required class="form-textarea"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label required-field">Permanent Address</label>
+                                <textarea name="permanent_address" rows="3" required class="form-textarea"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label required-field">State</label>
+                                <input type="text" name="state" required class="form-input" maxlength="100">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label required-field">City</label>
+                                <input type="text" name="city" required class="form-input" maxlength="100">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label required-field">Zipcode</label>
+                                <input type="text" name="zipcode" required class="form-input" maxlength="20">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label required-field">Emergency Contact</label>
+                                <input type="text" name="emergency_contact" required class="form-input" maxlength="255">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Educational Details -->
+                    <div class="form-section">
+                        <div class="section-header">
+                            <div class="icon-container">
+                                <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+                                </svg>
+                            </div>
+                            <h2 class="section-title">Educational Details</h2>
+                        </div>
+                        <div>
+                            <!-- SSC (Mandatory) -->
+                            <div class="education-section">
+                                <h3 class="education-title">Secondary School Certificate (SSC) <span style="color: #ef4444;">*</span></h3>
+                                <div class="form-grid">
+                                    <div class="form-group">
+                                        <label class="form-label required-field">Board</label>
+                                        <input type="text" name="ssc_board" required class="form-input" maxlength="255">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label required-field">Year</label>
+                                        <input type="number" name="ssc_year" required min="1960" max="2035" class="form-input">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label required-field">Percentage</label>
+                                        <input type="text" name="ssc_percentage" required class="form-input" maxlength="10">
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Intermediate (Optional) -->
+                            <div class="education-section" id="intermediateSection">
+                                <h3 class="education-title">Intermediate</h3>
+                                <div class="form-grid">
+                                    <div class="form-group">
+                                        <label class="form-label">Board</label>
+                                        <input type="text" name="intermediate_board" class="form-input" maxlength="255">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Year</label>
+                                        <input type="number" name="intermediate_year" min="1960" max="2035" class="form-input">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Percentage</label>
+                                        <input type="text" name="intermediate_percentage" class="form-input" maxlength="10">
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Graduation (Optional) -->
+                            <div class="education-section" id="graduationSection">
+                                <h3 class="education-title">Graduation</h3>
+                                <div class="form-grid">
+                                    <div class="form-group">
+                                        <label class="form-label">College Name</label>
+                                        <input type="text" name="college_name" class="form-input" maxlength="255">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Qualification</label>
+                                        <input type="text" name="qualification" class="form-input" maxlength="255">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Branch</label>
+                                        <input type="text" name="branch" class="form-input" maxlength="255">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Graduation Year</label>
+                                        <input type="number" name="graduation_year" min="1960" max="2035" class="form-input">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Graduation Percentage</label>
+                                        <input type="text" name="graduation_percentage" class="form-input" maxlength="10">
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Additional Education -->
+                            <div id="additionalEducation"></div>
+                            <div>
+                                <button type="button" id="addEducationButton" class="button button-secondary">
+                                    <svg style="width: 20px; height: 20px; margin-right: 8px;" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                                    </svg>
+                                    Add Education
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Job Expectations and Details -->
+                    <div class="form-section">
+                        <div class="section-header">
+                            <div class="icon-container">
+                                <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                                </svg>
+                            </div>
+                            <h2 class="section-title">Job Expectations and Details</h2>
+                        </div>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label class="form-label required-field">Job Role</label>
+                                <input type="text" name="job_role" required class="form-input" maxlength="255">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label required-field">Preferred Location</label>
+                                <input type="text" name="preferred_location" required class="form-input" maxlength="255">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label required-field">Notice Period</label>
+                                <input type="text" name="notice_period" required class="form-input" maxlength="100">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Expected Salary</label>
+                                <input type="number" name="expected_salary" class="form-input">
+                            </div>
+                            <div class="form-group" style="grid-column: span 1;">
+                                <label class="form-label required-field">Skills</label>
+                                <textarea name="skills" rows="3" required class="form-textarea"></textarea>
+                                <p style="font-size: 12px; color: #6b7280; margin-top: 8px;">Please list your key skills separated by commas</p>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label required-field">Experience Status</label>
+                                <select name="experience_status" required class="form-select">
+                                    <option value="">Select Experience Status</option>
+                                    <option value="Fresher">Fresher</option>
+                                    <option value="Experienced">Experienced</option>
+                                </select>
+                            </div>
+                            <div id="experienceFields" style="grid-column: span 2; display: none;">
+                                <div class="education-section">
+                                    <h3 class="education-title">Work Experience</h3>
+                                    <div class="form-grid">
+                                        <div class="form-group">
+                                            <label class="form-label">Years of Experience</label>
+                                            <input type="number" name="years_experience" class="form-input">
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">Company Name</label>
+                                            <input type="text" name="company_name" class="form-input" maxlength="255">
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">Designation</label>
+                                            <input type="text" name="designation" class="form-input" maxlength="255">
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">Work Location</label>
+                                            <input type="text" name="work_location" class="form-input" maxlength="255">
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">Start Date (MM/YYYY)</label>
+                                            <input type="text" name="start_date" placeholder="MM/YYYY" class="form-input" maxlength="20">
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">End Date (MM/YYYY)</label>
+                                            <input type="text" name="end_date" placeholder="MM/YYYY" class="form-input" maxlength="20">
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">Last Salary</label>
+                                            <input type="number" name="last_salary" class="form-input">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Additional Details -->
+                    <div class="form-section">
+                        <div class="section-header">
+                            <div class="icon-container">
+                                <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                            </div>
+                            <h2 class="section-title">Additional Details</h2>
+                        </div>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label class="form-label">Alternate Mobile</label>
+                                <input type="tel" name="alt_mobile" class="form-input" maxlength="20">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">LinkedIn Profile</label>
+                                <input type="url" name="linkedin" placeholder="https://linkedin.com/in/username" class="form-input" maxlength="255">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">GitHub Profile</label>
+                                <input type="url" name="github" placeholder="https://github.com/username" class="form-input" maxlength="255">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Certifications</label>
+                                <textarea name="certifications" rows="3" class="form-textarea"></textarea>
+                                <p style="font-size: 12px; color: #6b7280; margin-top: 8px;">List any professional certifications you have</p>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Reference Name</label>
+                                <input type="text" name="reference_name" class="form-input" maxlength="255">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Reference Email</label>
+                                <input type="email" name="reference_email" class="form-input" maxlength="255">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Resume Upload -->
+                    <div class="form-section">
+                        <div class="section-header">
+                            <div class="icon-container">
+                                <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+                                </svg>
+                            </div>
+                            <h2 class="section-title">Resume</h2>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label required-field">Upload Resume (PDF)</label>
+                            <div class="file-upload">
+                                <svg class="file-upload-icon" stroke="currentColor" fill="none" viewBox="0 0 48 48">
+                                    <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                                </svg>
+                                <div class="file-upload-text">
+                                    <label for="resume" class="file-upload-link">Upload a file</label>
+                                    <input id="resume" name="resume" type="file" accept="application/pdf" required style="display: none;">
+                                    <span>or drag and drop</span>
+                                </div>
+                                <p class="file-upload-info">PDF up to 5MB</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Cover Letter Upload -->
+                    <div class="form-section">
+                        <div class="section-header">
+                            <div class="icon-container">
+                                <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+                                </svg>
+                            </div>
+                            <h2 class="section-title">Cover Letter (Optional)</h2>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Upload Cover Letter (PDF)</label>
+                            <div class="file-upload">
+                                <svg class="file-upload-icon" stroke="currentColor" fill="none" viewBox="0 0 48 48">
+                                    <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                                </svg>
+                                <div class="file-upload-text">
+                                    <label for="cover_letter" class="file-upload-link">Upload a file</label>
+                                    <input id="cover_letter" name="cover_letter" type="file" accept="application/pdf" style="display: none;">
+                                    <span>or drag and drop</span>
+                                </div>
+                                <p class="file-upload-info">PDF up to 5MB</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Terms and Conditions -->
+                    <div class="checkbox-container">
+                        <input id="termsCheckbox" name="terms" type="checkbox" class="checkbox">
+                        <div>
+                            <label for="termsCheckbox" class="checkbox-label">I agree to the <a href="#" id="termsLink" class="checkbox-link">Terms and Conditions</a> <span style="color: #ef4444;">*</span></label>
+                            <p class="checkbox-subtext">By submitting this form, you agree to our privacy policy and terms of service.</p>
+                        </div>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <button type="submit" id="submitButton" disabled class="submit-button">
+                        <svg class="submit-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+                        </svg>
+                        Submit Application
+                    </button>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <!-- Confirmation Modal -->
+    <div id="confirmationModal" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <svg class="modal-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                <h2 class="modal-title">Confirm Your Application</h2>
+            </div>
+            <p style="font-size: 14px; color: #6b7280; margin-bottom: 16px;">Please review your information before submitting:</p>
+            
+            <div class="confirmation-details">
+                <div class="confirmation-section">
+                    <h3 class="confirmation-section-title">Personal Details</h3>
+                    <div class="confirmation-grid">
+                        <div class="confirmation-item">
+                            <div class="confirmation-label">Full Name</div>
+                            <div class="confirmation-value" id="confirmFullName"></div>
+                        </div>
+                        <div class="confirmation-item">
+                            <div class="confirmation-label">Email</div>
+                            <div class="confirmation-value" id="confirmEmail"></div>
+                        </div>
+                        <div class="confirmation-item">
+                            <div class="confirmation-label">Mobile</div>
+                            <div class="confirmation-value" id="confirmMobile"></div>
+                        </div>
+                        <div class="confirmation-item">
+                            <div class="confirmation-label">Date of Birth</div>
+                            <div class="confirmation-value" id="confirmDob"></div>
+                        </div>
+                        <div class="confirmation-item">
+                            <div class="confirmation-label">Gender</div>
+                            <div class="confirmation-value" id="confirmGender"></div>
+                        </div>
+                        <div class="confirmation-item">
+                            <div class="confirmation-label">Nationality</div>
+                            <div class="confirmation-value" id="confirmNationality"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="confirmation-section">
+                    <h3 class="confirmation-section-title">Address</h3>
+                    <div class="confirmation-grid">
+                        <div class="confirmation-item">
+                            <div class="confirmation-label">Current Address</div>
+                            <div class="confirmation-value" id="confirmCurrentAddress"></div>
+                        </div>
+                        <div class="confirmation-item">
+                            <div class="confirmation-label">Permanent Address</div>
+                            <div class="confirmation-value" id="confirmPermanentAddress"></div>
+                        </div>
+                        <div class="confirmation-item">
+                            <div class="confirmation-label">City, State, Zipcode</div>
+                            <div class="confirmation-value" id="confirmLocation"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="confirmation-section">
+                    <h3 class="confirmation-section-title">Education</h3>
+                    <div class="confirmation-grid">
+                        <div class="confirmation-item">
+                            <div class="confirmation-label">SSC</div>
+                            <div class="confirmation-value" id="confirmSsc"></div>
+                        </div>
+                        <div class="confirmation-item">
+                            <div class="confirmation-label">Intermediate</div>
+                            <div class="confirmation-value" id="confirmIntermediate"></div>
+                        </div>
+                        <div class="confirmation-item">
+                            <div class="confirmation-label">Graduation</div>
+                            <div class="confirmation-value" id="confirmGraduation"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="confirmation-section">
+                    <h3 class="confirmation-section-title">Job Details</h3>
+                    <div class="confirmation-grid">
+                        <div class="confirmation-item">
+                            <div class="confirmation-label">Job Role</div>
+                            <div class="confirmation-value" id="confirmJobRole"></div>
+                        </div>
+                        <div class="confirmation-item">
+                            <div class="confirmation-label">Preferred Location</div>
+                            <div class="confirmation-value" id="confirmPreferredLocation"></div>
+                        </div>
+                        <div class="confirmation-item">
+                            <div class="confirmation-label">Experience Status</div>
+                            <div class="confirmation-value" id="confirmExperienceStatus"></div>
+                        </div>
+                        <div class="confirmation-item">
+                            <div class="confirmation-label">Skills</div>
+                            <div class="confirmation-value" id="confirmSkills"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button id="cancelConfirmation" type="button" class="button button-secondary">Back to Form</button>
+                <button id="confirmSubmission" type="button" class="button button-primary">Confirm and Submit</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Terms and Conditions Modal -->
+    <div id="termsModal" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <svg class="modal-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                <h2 class="modal-title">Terms and Conditions</h2>
+            </div>
+            <div>
+                <div class="modal-section">
+                    <h3 class="modal-section-title">1. Application Process</h3>
+                    <p class="modal-section-text">
+                        By submitting this application, you agree to provide accurate and truthful information about your qualifications, experience, and background. Any misrepresentation may result in disqualification from consideration or termination of employment if discovered after hiring.
+                    </p>
+                </div>
+                <div class="modal-section">
+                    <h3 class="modal-section-title">2. Data Collection and Privacy</h3>
+                    <p class="modal-section-text">
+                        We collect personal data as part of the recruitment process. This data will be used solely for recruitment purposes and will be stored securely in accordance with applicable data protection laws.
+                    </p>
+                </div>
+                <div class="modal-section">
+                    <h3 class="modal-section-title">3. Interview Process</h3>
+                    <p class="modal-section-text">
+                        If selected, you agree to participate in our interview process which may include phone screenings, technical assessments, and in-person interviews.
+                    </p>
+                </div>
+            </div>
+            <div class="checkbox-container" style="margin-bottom: 24px;">
+                <input id="acceptTerms" type="checkbox" class="checkbox">
+                <label for="acceptTerms" class="checkbox-label">I have read and accept the terms and conditions</label>
+            </div>
+            <div class="modal-footer">
+                <button id="cancelTerms" type="button" class="button button-secondary">Cancel</button>
+                <button id="confirmTerms" disabled type="button" class="button button-primary">Confirm Acceptance</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Modal -->
+    <div id="successModal" class="modal-overlay">
+        <div class="modal success-modal">
+            <div class="success-icon-container">
+                <svg class="success-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+            </div>
+            <h2 class="success-title">Application Submitted!</h2>
+            <div class="modal-section">
+                <p id="successMessage" class="success-message">
+                    Thank you for your application. We've received your information and will review it shortly.
+                </p>
+                <p class="success-message">
+                    Reference ID: <span id="referenceId" class="reference-id">APP-2023-XXXXX</span>
+                </p>
+            </div>
+            <div style="margin-top: 20px;">
+                <button onclick="closeModal()" type="button" class="button button-primary">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const BASE_URL = 'http://localhost:5000';
+
+        // Counter for additional education fields
+        let educationCounter = 0;
+
+        // Add new education field
+        document.getElementById('addEducationButton').addEventListener('click', () => {
+            educationCounter++;
+            const additionalEducationDiv = document.getElementById('additionalEducation');
+            const newEducation = document.createElement('div');
+            newEducation.className = 'education-section additional-education';
+            newEducation.id = `additionalEducation${educationCounter}`;
+            newEducation.innerHTML = `
+                <h3 class="education-title">Additional Education #${educationCounter}</h3>
+                <button type="button" class="remove-education" onclick="removeEducation(this)">
+                    <svg style="width: 24px; height: 24px;" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label">Institution/Board</label>
+                        <input type="text" name="additional_education[${educationCounter}][institution]" class="form-input" maxlength="255">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Qualification</label>
+                        <input type="text" name="additional_education[${educationCounter}][qualification]" class="form-input" maxlength="255">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Branch</label>
+                        <input type="text" name="additional_education[${educationCounter}][branch]" class="form-input" maxlength="255">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Year</label>
+                        <input type="number" name="additional_education[${educationCounter}][year]" min="1960" max="2035" class="form-input">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Percentage</label>
+                        <input type="text" name="additional_education[${educationCounter}][percentage]" class="form-input" maxlength="10">
+                    </div>
+                </div>
+            `;
+            additionalEducationDiv.appendChild(newEducation);
+        });
+
+        // Remove education field
+        function removeEducation(button) {
+            button.parentElement.remove();
+        }
+
+        // Show/hide experience fields
+        document.querySelector('[name="experience_status"]').addEventListener('change', (e) => {
+            const experienceFields = document.getElementById('experienceFields');
+            experienceFields.style.display = e.target.value === 'Experienced' ? 'block' : 'none';
+        });
+
+        // Terms and Conditions Modal
+        const termsLink = document.getElementById('termsLink');
+        const termsModal = document.getElementById('termsModal');
+        const acceptTerms = document.getElementById('acceptTerms');
+        const confirmTerms = document.getElementById('confirmTerms');
+        const cancelTerms = document.getElementById('cancelTerms');
+        const submitButton = document.getElementById('submitButton');
+        const termsCheckbox = document.getElementById('termsCheckbox');
+
+        termsLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            termsModal.classList.add('active');
+        });
+
+        acceptTerms.addEventListener('change', () => {
+            confirmTerms.disabled = !acceptTerms.checked;
+            termsCheckbox.checked = acceptTerms.checked;
+            submitButton.disabled = !acceptTerms.checked;
+        });
+
+        confirmTerms.addEventListener('click', () => {
+            termsModal.classList.remove('active');
+            termsCheckbox.checked = true;
+            submitButton.disabled = false;
+        });
+
+        cancelTerms.addEventListener('click', () => {
+            termsModal.classList.remove('active');
+            acceptTerms.checked = false;
+            termsCheckbox.checked = false;
+            submitButton.disabled = true;
+        });
+
+        // Confirmation Modal
+        const confirmationModal = document.getElementById('confirmationModal');
+        const cancelConfirmation = document.getElementById('cancelConfirmation');
+        const confirmSubmission = document.getElementById('confirmSubmission');
+
+        // Form Validation for Educational Sections
+        function validateEducationalSection(sectionId, fields) {
+            const inputs = document.querySelectorAll(`#${sectionId} input`);
+            const hasValue = Array.from(inputs).some(input => input.value.trim() !== '');
+            inputs.forEach(input => {
+                input.required = hasValue;
+                if (input.name.includes('year')) {
+                    input.min = '1960';
+                    input.max = '2035';
+                }
+            });
+        }
+
+        // Validate additional education sections
+        function validateAdditionalEducation() {
+            const additionalSections = document.querySelectorAll('.additional-education');
+            const additionalEducation = [];
+            additionalSections.forEach(section => {
+                const inputs = section.querySelectorAll('input');
+                const hasValue = Array.from(inputs).some(input => input.value.trim() !== '');
+                inputs.forEach(input => {
+                    input.required = hasValue;
+                    if (input.name.includes('year')) {
+                        input.min = '1960';
+                        input.max = '2035';
+                    }
+                });
+                if (hasValue) {
+                    const education = {};
+                    inputs.forEach(input => {
+                        const match = input.name.match(/additional_education\[\d+\]\[(\w+)\]/);
+                        if (match) {
+                            education[match[1]] = input.value || null;
+                        }
+                    });
+                    if (Object.values(education).some(val => val !== null)) {
+                        additionalEducation.push(education);
+                    }
+                }
+            });
+            return additionalEducation;
+        }
+
+        // Populate confirmation modal with form data
+        function populateConfirmationModal(form) {
+            document.getElementById('confirmFullName').textContent = form.querySelector('[name="full_name"]').value || 'Not provided';
+            document.getElementById('confirmEmail').textContent = form.querySelector('[name="email"]').value || 'Not provided';
+            document.getElementById('confirmMobile').textContent = form.querySelector('[name="mobile"]').value || 'Not provided';
+            document.getElementById('confirmDob').textContent = form.querySelector('[name="dob"]').value || 'Not provided';
+            document.getElementById('confirmGender').textContent = form.querySelector('[name="gender"]').value || 'Not provided';
+            document.getElementById('confirmNationality').textContent = form.querySelector('[name="nationality"]').value || 'Not provided';
+            
+            document.getElementById('confirmCurrentAddress').textContent = form.querySelector('[name="current_address"]').value || 'Not provided';
+            document.getElementById('confirmPermanentAddress').textContent = form.querySelector('[name="permanent_address"]').value || 'Not provided';
+            
+            const city = form.querySelector('[name="city"]').value || '';
+            const state = form.querySelector('[name="state"]').value || '';
+            const zipcode = form.querySelector('[name="zipcode"]').value || '';
+            document.getElementById('confirmLocation').textContent = `${city}${city && state ? ', ' : ''}${state}${(city || state) && zipcode ? ' ' : ''}${zipcode}` || 'Not provided';
+            
+            // Education
+            const sscBoard = form.querySelector('[name="ssc_board"]').value || '';
+            const sscYear = form.querySelector('[name="ssc_year"]').value || '';
+            const sscPercentage = form.querySelector('[name="ssc_percentage"]').value || '';
+            document.getElementById('confirmSsc').textContent = `${sscBoard}${sscBoard && sscYear ? ', ' : ''}${sscYear}${(sscBoard || sscYear) && sscPercentage ? ', ' : ''}${sscPercentage}` || 'Not provided';
+            
+            const intermediateBoard = form.querySelector('[name="intermediate_board"]').value || '';
+            const intermediateYear = form.querySelector('[name="intermediate_year"]').value || '';
+            const intermediatePercentage = form.querySelector('[name="intermediate_percentage"]').value || '';
+            document.getElementById('confirmIntermediate').textContent = `${intermediateBoard}${intermediateBoard && intermediateYear ? ', ' : ''}${intermediateYear}${(intermediateBoard || intermediateYear) && intermediatePercentage ? ', ' : ''}${intermediatePercentage}` || 'Not provided';
+            
+            const collegeName = form.querySelector('[name="college_name"]').value || '';
+            const qualification = form.querySelector('[name="qualification"]').value || '';
+            const branch = form.querySelector('[name="branch"]').value || '';
+            const graduationYear = form.querySelector('[name="graduation_year"]').value || '';
+            const graduationPercentage = form.querySelector('[name="graduation_percentage"]').value || '';
+            let graduationText = '';
+            if (collegeName) graduationText += collegeName;
+            if (qualification) graduationText += (graduationText ? ', ' : '') + qualification;
+            if (branch) graduationText += (graduationText ? ', ' : '') + branch;
+            if (graduationYear) graduationText += (graduationText ? ', ' : '') + graduationYear;
+            if (graduationPercentage) graduationText += (graduationText ? ', ' : '') + graduationPercentage;
+            document.getElementById('confirmGraduation').textContent = graduationText || 'Not provided';
+            
+            // Job details
+            document.getElementById('confirmJobRole').textContent = form.querySelector('[name="job_role"]').value || 'Not provided';
+            document.getElementById('confirmPreferredLocation').textContent = form.querySelector('[name="preferred_location"]').value || 'Not provided';
+            document.getElementById('confirmExperienceStatus').textContent = form.querySelector('[name="experience_status"]').value || 'Not provided';
+            document.getElementById('confirmSkills').textContent = form.querySelector('[name="skills"]').value || 'Not provided';
+        }
+
+        // Form Submission
+        document.getElementById('applicationForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            if (!termsCheckbox.checked) {
+                alert('Please accept the Terms and Conditions.');
+                return;
+            }
+
+            // Show confirmation modal
+            populateConfirmationModal(e.target);
+            confirmationModal.classList.add('active');
+        });
+
+        // Handle confirmation modal buttons
+        cancelConfirmation.addEventListener('click', () => {
+            confirmationModal.classList.remove('active');
+        });
+
+        confirmSubmission.addEventListener('click', async () => {
+            confirmationModal.classList.remove('active');
+            
+            const form = document.getElementById('applicationForm');
+            
+            // Validate educational sections
+            validateEducationalSection('intermediateSection', ['intermediate_board', 'intermediate_year', 'intermediate_percentage']);
+            validateEducationalSection('graduationSection', ['college_name', 'qualification', 'branch', 'graduation_year', 'graduation_percentage']);
+
+            const formData = new FormData();
+
+            // Collect and sanitize form fields
+            const fields = {
+                full_name: form.querySelector('[name="full_name"]').value,
+                email: form.querySelector('[name="email"]').value,
+                mobile: form.querySelector('[name="mobile"]').value,
+                dob: form.querySelector('[name="dob"]').value,
+                parent_name: form.querySelector('[name="parent_name"]').value,
+                gender: form.querySelector('[name="gender"]').value,
+                nationality: form.querySelector('[name="nationality"]').value,
+                marital_status: form.querySelector('[name="marital_status"]').value || null,
+                current_address: form.querySelector('[name="current_address"]').value,
+                permanent_address: form.querySelector('[name="permanent_address"]').value,
+                state: form.querySelector('[name="state"]').value,
+                city: form.querySelector('[name="city"]').value,
+                zipcode: form.querySelector('[name="zipcode"]').value,
+                emergency_contact: form.querySelector('[name="emergency_contact"]').value,
+                ssc_board: form.querySelector('[name="ssc_board"]').value,
+                ssc_year: form.querySelector('[name="ssc_year"]').value,
+                ssc_percentage: form.querySelector('[name="ssc_percentage"]').value,
+                intermediate_board: form.querySelector('[name="intermediate_board"]').value || null,
+                intermediate_year: form.querySelector('[name="intermediate_year"]').value || null,
+                intermediate_percentage: form.querySelector('[name="intermediate_percentage"]').value || null,
+                college_name: form.querySelector('[name="college_name"]').value || null,
+                qualification: form.querySelector('[name="qualification"]').value || null,
+                branch: form.querySelector('[name="branch"]').value || null,
+                graduation_year: form.querySelector('[name="graduation_year"]').value || null,
+                graduation_percentage: form.querySelector('[name="graduation_percentage"]').value || null,
+                job_role: form.querySelector('[name="job_role"]').value,
+                preferred_location: form.querySelector('[name="preferred_location"]').value,
+                notice_period: form.querySelector('[name="notice_period"]').value,
+                expected_salary: form.querySelector('[name="expected_salary"]').value || null,
+                skills: form.querySelector('[name="skills"]').value,
+                experience_status: form.querySelector('[name="experience_status"]').value,
+                years_experience: form.querySelector('[name="years_experience"]').value || null,
+                company_name: form.querySelector('[name="company_name"]').value || null,
+                designation: form.querySelector('[name="designation"]').value || null,
+                work_location: form.querySelector('[name="work_location"]').value || null,
+                start_date: form.querySelector('[name="start_date"]').value || null,
+                end_date: form.querySelector('[name="end_date"]').value || null,
+                last_salary: form.querySelector('[name="last_salary"]').value || null,
+                alt_mobile: form.querySelector('[name="alt_mobile"]').value || null,
+                linkedin: form.querySelector('[name="linkedin"]').value || null,
+                github: form.querySelector('[name="github"]').value || null,
+                certifications: form.querySelector('[name="certifications"]').value || null,
+                reference_name: form.querySelector('[name="reference_name"]').value || null,
+                reference_email: form.querySelector('[name="reference_email"]').value || null
+            };
+
+            // Append non-file fields
+            for (const [key, value] of Object.entries(fields)) {
+                if (value !== null && value !== '') {
+                    formData.append(key, value);
+                }
+            }
+
+            // Append additional education
+            const additionalEducation = validateAdditionalEducation();
+            if (additionalEducation.length > 0) {
+                formData.append('additional_education', JSON.stringify(additionalEducation));
+            }
+
+            // Append files
+            const resume = form.querySelector('[name="resume"]').files[0];
+            if (resume) {
+                formData.append('resume', resume);
+            }
+            const coverLetter = form.querySelector('[name="cover_letter"]').files[0];
+            if (coverLetter) {
+                formData.append('cover_letter', coverLetter);
+            }
+
+            // Show loading state
+            submitButton.disabled = true;
+            submitButton.innerHTML = `
+                <svg class="animate-spin" style="width: 20px; height: 20px; margin-right: 12px;" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle style="opacity: 0.25;" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path style="opacity: 0.75;" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Processing...
+            `;
+
+            try {
+                const response = await fetch(`${BASE_URL}/api/submit`, {
+                    method: 'POST',
+                    body: formData
+                });
+                const result = await response.json();
+                
+                if (!result.success) {
+                    throw new Error(`HTTP ${response.status}: ${result.error}${result.missing ? ' - Missing fields: ' + result.missing.join(', ') : ''}`);
+                }
+                
+                // Show success message with reference ID
+                document.getElementById('referenceId').textContent = `APP-${new Date().getFullYear()}-${result.id.toString().padStart(5, '0')}`;
+                document.getElementById('successModal').classList.add('active');
+                
+                // Reset form
+                form.reset();
+                document.getElementById('additionalEducation').innerHTML = '';
+                educationCounter = 0;
+                submitButton.disabled = true;
+                termsCheckbox.checked = false;
+                acceptTerms.checked = false;
+                
+            } catch (error) {
+                console.error('Submission error:', error);
+                alert(`Submission failed: ${error.message}`);
+            } finally {
+                // Reset button state
+                submitButton.disabled = !termsCheckbox.checked;
+                submitButton.innerHTML = `
+                    <svg class="submit-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+                    </svg>
+                    Submit Application
+                `;
+            }
+        });
+
+        function closeModal() {
+            document.getElementById('successModal').classList.remove('active');
+        }
+    </script>
+</body>
+</html>

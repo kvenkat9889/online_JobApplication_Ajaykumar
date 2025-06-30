@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HR Dashboard - Job Applications</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .modal {
+            display: none;
+            transition: opacity 0.3s ease;
+        }
+        .modal.show {
+            display: flex;
+        }
+        .modal-content {
+            animation: slideIn 0.3s ease;
+        }
+        @keyframes slideIn {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        .status-pending { background-color: #fefcbf; color: #b45309; }
+        .status-approved { background-color: #d1fae5; color: #15803d; }
+        .status-rejected { background-color: #fee2e2; color: #b91c1c; }
+    </style>
+</head>
+<body class="bg-gray-100 font-sans">
+    <div class="container mx-auto p-4 sm:p-6">
+        <!-- Header -->
+        <header class="bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg shadow-lg p-6 mb-6">
+            <div class="flex items-center">
+                <img src="../Fronted/logo.jpg" alt="Company Logo" class="h-12 mr-4">
+                <h1 class="text-2xl font-bold">HR Dashboard - Job Applications</h1>
+            </div>
+        </header>
+
+        <!-- Applications Table -->
+        <div class="bg-white rounded-lg shadow overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ref ID</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Job Role</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="applicationsTable" class="divide-y divide-gray-200"></tbody>
+            </table>
+        </div>
+
+        <!-- Details Modal -->
+        <div id="detailsModal" class="modal fixed inset-0 bg-black bg-opacity-50 items-center justify-center">
+            <div class="modal-content bg-white rounded-lg p-6 max-w-3xl w-full max-h-[80vh] overflow-y-auto">
+                <h2 class="text-2xl font-bold text-gray-800 mb-4">Application Details</h2>
+                <div id="applicationDetails" class="space-y-4"></div>
+                <div class="mt-6 flex justify-end">
+                    <button onclick="closeDetailsModal()" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const BASE_URL = 'http://localhost:5000';
+
+        // Fetch and display applications
+        async function fetchApplications() {
+            try {
+                const response = await fetch(`${BASE_URL}/api/applications`);
+                const result = await response.json();
+                if (!result.success) throw new Error(result.error);
+                displayApplications(result.data);
+            } catch (error) {
+                console.error('Error fetching applications:', error);
+                alert('Failed to load applications: ' + error.message);
+            }
+        }
+
+        // Display applications in table
+        function displayApplications(applications) {
+            const tableBody = document.getElementById('applicationsTable');
+            tableBody.innerHTML = '';
+            applications.forEach(app => {
+                const row = document.createElement('tr');
+                row.className = 'hover:bg-gray-50';
+                row.innerHTML = `
+                    <td class="px-4 py-3 text-sm">${app.reference_id}</td>
+                    <td class="px-4 py-3 text-sm">${app.full_name}</td>
+                    <td class="px-4 py-3 text-sm">${app.job_role}</td>
+                    <td class="px-4 py-3 text-sm">${app.email}</td>
+                    <td class="px-4 py-3 text-sm">
+                        <span class="px-2 py-1 rounded-full text-xs status-${app.status.toLowerCase()}">
+                            ${app.status}
+                        </span>
+                    </td>
+                    <td class="px-4 py-3 text-sm">
+                        <button onclick="viewDetails(${app.id})" class="text-blue-600 hover:underline mr-2">View</button>
+                        <a href="${BASE_URL}/api/files/${app.resume_path}" download class="text-green-600 hover:underline mr-2">Download Resume</a>
+                        <select onchange="updateStatus(${app.id}, this.value)" class="border rounded px-2 py-1 text-sm">
+                            <option value="" disabled ${app.status === '' ? 'selected' : ''}>Change Status</option>
+                            <option value="Pending" ${app.status === 'Pending' ? 'selected' : ''}>Pending</option>
+                            <option value="Approved" ${app.status === 'Approved' ? 'selected' : ''}>Approved</option>
+                            <option value="Rejected" ${app.status === 'Rejected' ? 'selected' : ''}>Rejected</option>
+                        </select>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+
+        // Fetch and show application details
+        async function viewDetails(id) {
+            try {
+                const response = await fetch(`${BASE_URL}/api/applications/${id}`);
+                const result = await response.json();
+                if (!result.success) throw new Error(result.error);
+                displayApplicationDetails(result.data);
+                document.getElementById('detailsModal').classList.add('show');
+            } catch (error) {
+                console.error('Error fetching application details:', error);
+                alert('Failed to load application details: ' + error.message);
+            }
+        }
+
+        // Display application details in modal
+        function displayApplicationDetails(app) {
+            const detailsDiv = document.getElementById('applicationDetails');
+            detailsDiv.innerHTML = `
+                <p><strong>Reference ID:</strong> ${app.reference_id}</p>
+                <p><strong>Full Name:</strong> ${app.full_name}</p>
+                <p><strong>Email:</strong> ${app.email}</p>
+                <p><strong>Mobile:</strong> ${app.mobile}</p>
+                <p><strong>Job Role:</strong> ${app.job_role}</p>
+                <p><strong>Expected Salary:</strong> ${app.expected_salary ? `₹${app.expected_salary}` : 'N/A'}</p>
+                <p><strong>Preferred Location:</strong> ${app.preferred_location}</p>
+                <p><strong>Notice Period:</strong> ${app.notice_period}</p>
+                <p><strong>Technical Skill 1:</strong> ${app.technical_skill1 || 'N/A'}</p>
+                <p><strong>Technical Skill 2:</strong> ${app.technical_skill2 || 'N/A'}</p>
+                <p><strong>Key Skills:</strong> ${app.key_skills}</p>
+                <p><strong>Date of Birth:</strong> ${app.dob ? new Date(app.dob).toLocaleDateString() : 'N/A'}</p>
+                <p><strong>Parent's Name:</strong> ${app.parent_name}</p>
+                <p><strong>Gender:</strong> ${app.gender}</p>
+                <p><strong>Nationality:</strong> ${app.nationality}</p>
+                <p><strong>Marital Status:</strong> ${app.marital_status || 'N/A'}</p>
+                <p><strong>Current Address:</strong> ${app.current_address}</p>
+                <p><strong>Permanent Address:</strong> ${app.permanent_address}</p>
+                <p><strong>State:</strong> ${app.state}</p>
+                <p><strong>City:</strong> ${app.city}</p>
+                <p><strong>Zipcode:</strong> ${app.zipcode}</p>
+                <p><strong>Emergency Contact:</strong> ${app.emergency_contact}</p>
+                <p><strong>Alternate Mobile:</strong> ${app.alt_mobile || 'N/A'}</p>
+                <p><strong>LinkedIn:</strong> ${app.linkedin ? `<a href="${app.linkedin}" target="_blank" class="text-blue-600 hover:underline">${app.linkedin}</a>` : 'N/A'}</p>
+                <p><strong>GitHub:</strong> ${app.github ? `<a href="${app.github}" target="_blank" class="text-blue-600 hover:underline">${app.github}</a>` : 'N/A'}</p>
+                <p><strong>SSC Board:</strong> ${app.ssc_board}</p>
+                <p><strong>SSC Year:</strong> ${app.ssc_year}</p>
+                <p><strong>SSC Percentage:</strong> ${app.ssc_percentage}</p>
+                <p><strong>Intermediate Board:</strong> ${app.intermediate_board}</p>
+                <p><strong>Intermediate Year:</strong> ${app.intermediate_year}</p>
+                <p><strong>Intermediate Percentage:</strong> ${app.intermediate_percentage}</p>
+                <p><strong>College Name:</strong> ${app.college_name}</p>
+                <p><strong>Qualification:</strong> ${app.qualification}</p>
+                <p><strong>Branch:</strong> ${app.branch}</p>
+                <p><strong>Graduation Year:</strong> ${app.graduation_year}</p>
+                <p><strong>Graduation Percentage:</strong> ${app.graduation_percentage}</p>
+                <p><strong>Certifications:</strong> ${app.certifications || 'N/A'}</p>
+                <p><strong>Experience Status:</strong> ${app.experience_status}</p>
+                ${app.experience_status === 'Experienced' ? `
+                    <p><strong>Years of Experience:</strong> ${app.years_experience}</p>
+                    <p><strong>Company Name:</strong> ${app.company_name || 'N/A'}</p>
+                    <p><strong>Designation:</strong> ${app.designation || 'N/A'}</p>
+                    <p><strong>Work Location:</strong> ${app.work_location || 'N/A'}</p>
+                    <p><strong>Start Date:</strong> ${app.start_date || 'N/A'}</p>
+                    <p><strong>End Date:</strong> ${app.end_date || 'N/A'}</p>
+                    <p><strong>Last Salary:</strong> ${app.last_salary ? `₹${app.last_salary}` : 'N/A'}</p>
+                ` : ''}
+                <p><strong>Reference Name:</strong> ${app.reference_name || 'N/A'}</p>
+                <p><strong>Reference Email:</strong> ${app.reference_email || 'N/A'}</p>
+                <p><strong>Resume:</strong> <a href="${BASE_URL}/api/files/${app.resume_path}" download class="text-green-600 hover:underline">Download Resume</a></p>
+                <p><strong>Status:</strong> <span class="status-${app.status.toLowerCase()} px-2 py-1 rounded-full">${app.status}</span></p>
+                <p><strong>Submitted At:</strong> ${new Date(app.created_at).toLocaleString()}</p>
+            `;
+        }
+
+        // Update application status
+        async function updateStatus(id, status) {
+            try {
+                const response = await fetch(`${BASE_URL}/api/applications/${id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ status })
+                });
+                const result = await response.json();
+                if (!result.success) throw new Error(result.error);
+                alert('Status updated successfully');
+                fetchApplications(); // Refresh table
+            } catch (error) {
+                console.error('Error updating status:', error);
+                alert('Failed to update status: ' + error.message);
+            }
+        }
+
+        // Close details modal
+        function closeDetailsModal() {
+            document.getElementById('detailsModal').classList.remove('show');
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', fetchApplications);
+    </script>
+</body>
+</html>

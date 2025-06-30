@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HR Dashboard - TechCorp Solutions</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #6e8efb, #a777e3);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .dashboard-container {
+            background: radial-gradient(circle, #ffffff, #f0f4ff);
+            border-radius: 12px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        .dashboard-container__logo {
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .dashboard-container__logo img {
+            max-width: 150px;
+            animation: pulse 2s infinite;
+        }
+
+        .dashboard-container__title {
+            text-align: center;
+            font-size: 2rem;
+            color: #333;
+            margin-bottom: 1rem;
+            background: linear-gradient(to right, #6e8efb, #a777e3);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .applications-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 2rem;
+        }
+
+        .applications-table th, .applications-table td {
+            padding: 1rem;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+
+        .applications-table th {
+            background: linear-gradient(to right, #6e8efb, #a777e3);
+            color: white;
+        }
+
+        .applications-table tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+
+        .download-button {
+            padding: 0.5rem 1rem;
+            background: linear-gradient(to right, #6e8efb, #a777e3);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .download-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(110, 142, 251, 0.4);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        @media (max-width: 768px) {
+            .applications-table {
+                font-size: 0.9rem;
+            }
+
+            .applications-table th, .applications-table td {
+                padding: 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <div class="dashboard-container__logo">
+            <img src="https://via.placeholder.com/150x50?text=TechCorp+Solutions" alt="TechCorp Solutions Logo">
+        </div>
+        <h1 class="dashboard-container__title">HR Dashboard 📋</h1>
+        <table class="applications-table" id="applicationsTable">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Full Name</th>
+                    <th>Email</th>
+                    <th>Job Role</th>
+                    <th>Submitted At</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="applicationsBody"></tbody>
+        </table>
+    </div>
+
+    <script>
+        async function fetchApplications() {
+            try {
+                const response = await fetch('http://localhost:5000/api/applications');
+                const applications = await response.json();
+                const tbody = document.getElementById('applicationsBody');
+                tbody.innerHTML = '';
+
+                applications.forEach(app => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${app.id}</td>
+                        <td>${app.full_name}</td>
+                        <td>${app.email}</td>
+                        <td>${app.job_role}</td>
+                        <td>${new Date(app.created_at).toLocaleString()}</td>
+                        <td>
+                            <button class="download-button" onclick='downloadJSON(${JSON.stringify(app)})'>Download JSON</button>
+                            ${app.resume_path ? `<a href="http://localhost:5000/${app.resume_path}" class="download-button" download>Resume</a>` : ''}
+                            ${app.certificate_upload_path ? `<a href="http://localhost:5000/${app.certificate_upload_path}" class="download-button" download>Certificate</a>` : ''}
+                            ${app.experience_certificate_path ? `<a href="http://localhost:5000/${app.experience_certificate_path}" class="download-button" download>Exp. Certificate</a>` : ''}
+                        </td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            } catch (error) {
+                console.error('Error fetching applications:', error);
+                alert('Error loading applications.');
+            }
+        }
+
+        function downloadJSON(app) {
+            const blob = new Blob([JSON.stringify(app, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `application_${app.id}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        window.onload = fetchApplications;
+    </script>
+</body>
+</html>

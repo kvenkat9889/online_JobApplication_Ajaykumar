@@ -37,9 +37,9 @@ app.use(limiter);
 // Database connection
 const pool = new Pool({
     user: process.env.DB_USER || 'postgres',
-    host: process.env.PG_HOST || 'localhost',
+    host: process.env.PG_HOST || 'postgres',
     database: process.env.DB_NAME || 'job_applications',
-    password: process.env.DB_PASSWORD || 'Password@12345',
+    password: process.env.DB_PASSWORD || 'admin123',
     port: process.env.DB_PORT || 5432,
     ssl: process.env.DB_SSL === 'true' ? { rejectUnauthorized: false } : false
 });
@@ -813,7 +813,7 @@ app.use((err, req, res, next) => {
 });
 
 // Start server
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 3431;
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 });

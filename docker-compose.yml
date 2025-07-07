@@ -1,0 +1,58 @@
+version: '3.8'
+
+services:
+  frontend:
+    build: ./Frontend
+    ports:
+      - "8058:80"
+    networks:
+      - jobapp-net-new  # Changed network name
+
+  hr_page:
+    build: ./Hr_Page
+    ports:
+      - "8059:80"
+    networks:
+      - jobapp-net-new  # Changed network name
+
+  backend:
+    build: ./Backend
+    ports:
+      - "3431:3431"
+    environment:
+      - DB_USER=postgres
+      - DB_PASSWORD=admin123
+      - DB_NAME=job_applications
+      - PG_HOST=postgres
+    volumes:
+      - ./Backend/Uploads:/usr/src/app/Uploads
+    networks:
+      - jobapp-net-new  # Changed network name
+    depends_on:
+      - postgres
+
+  postgres:
+    image: postgres:13
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=admin123
+      - POSTGRES_DB=job_applications
+    ports:
+      - "5431:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - jobapp-net-new  # Changed network name
+
+volumes:
+  postgres_data:
+
+networks:
+  jobapp-net-new:  # New network name
+    driver: bridge
+    attachable: true
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.93.0.0/16  # Changed subnet to avoid conflict
